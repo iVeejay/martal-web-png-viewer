@@ -1,90 +1,65 @@
-# React + Vite + Hono + Cloudflare Workers
+# Martal Sequence Viewer — `dev.martal.ir`
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/vite-react-template)
+A clean, professional **PNG sequence viewer / animation preview tool** for game
+artists and developers. Drag in a folder of exported sprite frames and preview
+the animation instantly. Everything runs **100% in the browser** — no files are
+ever uploaded.
 
-This template provides a minimal setup for building a React application with TypeScript and Vite, designed to run on Cloudflare Workers. It features hot module replacement, ESLint integration, and the flexibility of Workers deployments.
+Part of the Martal Games developer tools panel.
 
-![React + TypeScript + Vite + Cloudflare Workers](https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/fc7b4b62-442b-4769-641b-ad4422d74300/public)
+## Features
 
-<!-- dash-content-start -->
+- **Drag & drop** a folder or multiple images (PNG, JPG, WebP, GIF, BMP, AVIF).
+  Files are **naturally sorted** by name (`frame_2` before `frame_10`) and
+  decoded up front so playback never stalls. Loading progress is shown.
+- **Canvas viewer** with a transparency **checkerboard**, dark / light / custom
+  backgrounds, **pixel-art (nearest-neighbour) or smooth** rendering, fit /
+  100% / 200% zoom, zoom in/out, **scroll-wheel zoom toward the cursor**, and
+  **drag to pan**.
+- **Accurate playback** driven by `requestAnimationFrame` with an FPS
+  accumulator (not `setInterval`). Play/pause, stop, step, FPS slider + number
+  input, **reverse**, **loop**, and **ping-pong**.
+- **Transforms:** flip horizontal / vertical, rotate 90° either way.
+- **Bottom timeline** with lazy-loaded thumbnails; click to jump, active frame
+  is highlighted and auto-scrolled into view.
+- **Sequence info** (frame count, image size, FPS, duration, frame size),
+  **copy info** to clipboard, and **export the current frame as PNG** with the
+  flip/rotation baked in.
+- **Keyboard shortcuts:** `Space` play/pause · `←`/`→` step · `R` reverse ·
+  `F` fit · `H` flip-H · `V` flip-V.
 
-🚀 Supercharge your web development with this powerful stack:
+## Tech
 
-- [**React**](https://react.dev/) - A modern UI library for building interactive interfaces
-- [**Vite**](https://vite.dev/) - Lightning-fast build tooling and development server
-- [**Hono**](https://hono.dev/) - Ultralight, modern backend framework
-- [**Cloudflare Workers**](https://developers.cloudflare.com/workers/) - Edge computing platform for global deployment
+React + TypeScript + Vite, deployed on Cloudflare Workers (static assets). The
+viewer is entirely client-side; the Worker only exposes `/api/health`.
 
-### ✨ Key Features
-
-- 🔥 Hot Module Replacement (HMR) for rapid development
-- 📦 TypeScript support out of the box
-- 🛠️ ESLint configuration included
-- ⚡ Zero-config deployment to Cloudflare's global network
-- 🎯 API routes with Hono's elegant routing
-- 🔄 Full-stack development setup
-- 🔎 Built-in Observability to monitor your Worker
-
-Get started in minutes with local development or deploy directly via the Cloudflare dashboard. Perfect for building modern, performant web applications at the edge.
-
-<!-- dash-content-end -->
-
-## Getting Started
-
-To start a new project with this template, run:
-
-```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/vite-react-template
 ```
-
-A live deployment of this template is available at:
-[https://react-vite-template.templates.workers.dev](https://react-vite-template.templates.workers.dev)
+src/react-app/
+  App.tsx                 # root: all state + layout
+  components/             # Viewer, ControlPanel, Timeline, TopBar, DropZone
+  hooks/                  # usePlayback, useSequence, useKeyboardShortcuts
+  utils/                  # naturalSort, loadFiles, format
+  types.ts
+src/worker/index.ts       # tiny health endpoint; SPA fallback handled by CF
+```
 
 ## Development
 
-Install dependencies:
-
 ```bash
 npm install
+npm run dev        # http://localhost:5173
 ```
 
-Start the development server with:
+Then drag a folder of PNG frames onto the page.
+
+## Build & deploy
 
 ```bash
-npm run dev
+npm run build               # type-check + Vite build
+npm run preview             # preview the production build locally
+npm run deploy              # deploy to Cloudflare Workers (dev.martal.ir)
+npm run lint                # ESLint
 ```
 
-Your application will be available at [http://localhost:5173](http://localhost:5173).
-
-## Production
-
-Build your project for production:
-
-```bash
-npm run build
-```
-
-Preview your build locally:
-
-```bash
-npm run preview
-```
-
-Deploy your project to Cloudflare Workers:
-
-```bash
-npm run build && npm run deploy
-```
-
-Monitor your workers:
-
-```bash
-npx wrangler tail
-```
-
-## Additional Resources
-
-- [Cloudflare Workers Documentation](https://developers.cloudflare.com/workers/)
-- [Vite Documentation](https://vitejs.dev/guide/)
-- [React Documentation](https://reactjs.org/)
-- [Hono Documentation](https://hono.dev/)
+Set the `dev.martal.ir` custom domain / route for this Worker in the Cloudflare
+dashboard (or via `wrangler.json` `routes`) when you're ready to publish.
