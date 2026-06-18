@@ -35,3 +35,18 @@ export interface LoadProgress {
 	loaded: number;
 	total: number;
 }
+
+/** A decoded audio file held in memory for playback. */
+export interface AudioTrack {
+	id: string;
+	/** Original filename. */
+	name: string;
+	/** Decoded PCM, played forwards. */
+	buffer: AudioBuffer;
+	/** Same PCM with samples reversed, played for the "reverse" toggle. */
+	reversed: AudioBuffer;
+	/** Duration in seconds. */
+	duration: number;
+	/** File size in bytes. */
+	size: number;
+}

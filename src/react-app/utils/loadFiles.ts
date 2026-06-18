@@ -9,9 +9,17 @@ import { naturalSortBy } from "./naturalSort";
 
 /** Accepted image MIME types and extensions (PNG first, others welcome). */
 const IMAGE_EXT = /\.(png|jpe?g|webp|gif|bmp|avif)$/i;
+/** Accepted audio MIME types and extensions. */
+const AUDIO_EXT = /\.(mp3|wav|ogg|oga|m4a|aac|flac|opus|webm)$/i;
 
-function isImageFile(file: File): boolean {
+/** Predicate: is this file a supported image? */
+export function isImageFile(file: File): boolean {
 	return file.type.startsWith("image/") || IMAGE_EXT.test(file.name);
+}
+
+/** Predicate: is this file a supported audio file? */
+export function isAudioFile(file: File): boolean {
+	return file.type.startsWith("audio/") || AUDIO_EXT.test(file.name);
 }
 
 /**
@@ -65,6 +73,7 @@ function readEntry(
  */
 export async function filesFromDrop(
 	dt: DataTransfer,
+	accept: (file: File) => boolean = isImageFile,
 ): Promise<{ file: File; path: string }[]> {
 	const items = dt.items;
 	const supportsEntries =
@@ -79,22 +88,23 @@ export async function filesFromDrop(
 		if (entries.length > 0) {
 			const out: { file: File; path: string }[] = [];
 			await Promise.all(entries.map((e) => readEntry(e, "", out)));
-			return out.filter((x) => isImageFile(x.file));
+			return out.filter((x) => accept(x.file));
 		}
 	}
 
 	// Fallback: plain file list (no folder structure available).
 	return Array.from(dt.files)
-		.filter(isImageFile)
+		.filter(accept)
 		.map((file) => ({ file, path: file.name }));
 }
 
-/** Extract image files from a <input type="file"> (supports webkitdirectory). */
+/** Extract matching files from a <input type="file"> (supports webkitdirectory). */
 export function filesFromInput(
 	fileList: FileList,
+	accept: (file: File) => boolean = isImageFile,
 ): { file: File; path: string }[] {
 	return Array.from(fileList)
-		.filter(isImageFile)
+		.filter(accept)
 		.map((file) => ({
 			file,
 			// webkitRelativePath is set when a directory input is used.

@@ -18,3 +18,12 @@ export function formatDuration(frameCount: number, fps: number): string {
 	if (fps <= 0) return "—";
 	return `${(frameCount / fps).toFixed(2)} s`;
 }
+
+/** Seconds as m:ss.t, e.g. 73.4 -> "1:13.4". */
+export function formatTime(seconds: number): string {
+	if (!isFinite(seconds) || seconds < 0) seconds = 0;
+	const m = Math.floor(seconds / 60);
+	const s = Math.floor(seconds % 60);
+	const t = Math.floor((seconds * 10) % 10);
+	return `${m}:${s.toString().padStart(2, "0")}.${t}`;
+}

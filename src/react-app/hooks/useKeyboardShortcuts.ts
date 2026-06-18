@@ -19,7 +19,10 @@ export interface ShortcutHandlers {
 	flipV: () => void;
 }
 
-export function useKeyboardShortcuts(handlers: ShortcutHandlers): void {
+export function useKeyboardShortcuts(
+	handlers: ShortcutHandlers,
+	enabled = true,
+): void {
 	const ref = useRef(handlers);
 	// Keep the latest handlers in the ref (after render) so the single listener
 	// below never goes stale.
@@ -28,6 +31,7 @@ export function useKeyboardShortcuts(handlers: ShortcutHandlers): void {
 	});
 
 	useEffect(() => {
+		if (!enabled) return;
 		const onKeyDown = (e: KeyboardEvent) => {
 			const target = e.target as HTMLElement | null;
 			if (
@@ -74,5 +78,5 @@ export function useKeyboardShortcuts(handlers: ShortcutHandlers): void {
 
 		window.addEventListener("keydown", onKeyDown);
 		return () => window.removeEventListener("keydown", onKeyDown);
-	}, []);
+	}, [enabled]);
 }

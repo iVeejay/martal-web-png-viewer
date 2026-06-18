@@ -1,12 +1,99 @@
 /* ============================================================
-   Layout
+   Layout — panel shell
    ============================================================ */
 .app {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	height: 100vh;
 	overflow: hidden;
 	background: var(--bg);
+}
+
+/* Host holds both tools; the inactive one is [hidden]. */
+.tool-host {
+	flex: 1;
+	min-width: 0;
+	position: relative;
+}
+.tool-pane {
+	height: 100%;
+}
+.tool-pane[hidden] {
+	display: none;
+}
+
+/* Each tool is a vertical stack: toolbar + main area. */
+.tool {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow: hidden;
+	background: var(--bg);
+}
+
+/* ============================================================
+   Left activity rail (global branding + tool switcher)
+   ============================================================ */
+.rail {
+	width: 76px;
+	flex-shrink: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 14px;
+	padding: 12px 8px;
+	background: var(--panel);
+	border-right: 1px solid var(--border);
+}
+.rail-logo {
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+	filter: drop-shadow(0 0 6px rgba(232, 104, 44, 0.25));
+}
+.rail-tools {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	width: 100%;
+}
+.rail-btn {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 4px;
+	width: 100%;
+	padding: 10px 4px;
+	color: var(--text-dim);
+	background: transparent;
+	border: 1px solid transparent;
+	border-radius: var(--radius-sm);
+	transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.rail-btn:hover {
+	background: var(--panel-2);
+	color: var(--text);
+}
+.rail-btn.active {
+	background: rgba(200, 145, 92, 0.16);
+	border-color: var(--accent);
+	color: var(--accent-bright);
+}
+.rail-icon svg {
+	width: 24px;
+	height: 24px;
+	display: block;
+}
+.rail-label {
+	font-size: 10px;
+	letter-spacing: 0.2px;
+}
+
+.tool-title {
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+	color: var(--text);
 }
 
 .main {
@@ -35,34 +122,6 @@
 	background: var(--panel);
 	border-bottom: 1px solid var(--border);
 	flex-shrink: 0;
-}
-
-.brand {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-}
-.brand-logo {
-	width: 34px;
-	height: 34px;
-	object-fit: contain;
-	filter: drop-shadow(0 0 6px rgba(232, 104, 44, 0.25));
-}
-.brand-text {
-	display: flex;
-	flex-direction: column;
-	line-height: 1.15;
-}
-.brand-title {
-	font-size: 15px;
-	font-weight: 600;
-	letter-spacing: 0.2px;
-	color: var(--text);
-}
-.brand-sub {
-	font-size: 11px;
-	color: var(--text-faint);
-	letter-spacing: 0.3px;
 }
 
 .topbar-controls {
@@ -527,10 +586,122 @@
 }
 
 /* ============================================================
+   Audio tool
+   ============================================================ */
+.audio-stage {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 24px;
+	min-height: 0;
+}
+.audio-now {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+}
+.audio-name {
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--text);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.audio-time {
+	font-size: 14px;
+	color: var(--text-dim);
+	font-variant-numeric: tabular-nums;
+	flex-shrink: 0;
+}
+
+.waveform {
+	flex: 1;
+	min-height: 120px;
+	background: var(--panel);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	overflow: hidden;
+}
+.waveform-canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+	cursor: pointer;
+}
+
+.audio-transport {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+}
+.audio-transport .play-btn {
+	min-width: 64px;
+}
+
+.track-list {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	max-height: 30%;
+	overflow-y: auto;
+	padding-right: 4px;
+}
+.track-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 9px 12px;
+	font-size: 13px;
+	color: var(--text);
+	background: var(--panel);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	text-align: left;
+	transition: background 0.12s, border-color 0.12s;
+}
+.track-item:hover {
+	background: var(--panel-2);
+}
+.track-item.active {
+	background: rgba(200, 145, 92, 0.16);
+	border-color: var(--accent);
+	color: var(--accent-bright);
+}
+.track-name {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.track-dur {
+	flex-shrink: 0;
+	color: var(--text-dim);
+	font-variant-numeric: tabular-nums;
+}
+.track-item.active .track-dur {
+	color: var(--accent-bright);
+}
+
+.rate-presets {
+	display: flex;
+	gap: 6px;
+	margin-top: 8px;
+}
+.rate-presets .btn {
+	flex: 1;
+}
+
+/* ============================================================
    Responsive (desktop-first; gracefully narrow the panel)
    ============================================================ */
 @media (max-width: 900px) {
 	.panel {
 		width: 264px;
+	}
+	.rail {
+		width: 64px;
 	}
 }

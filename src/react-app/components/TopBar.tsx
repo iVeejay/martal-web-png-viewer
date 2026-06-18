@@ -1,7 +1,9 @@
-// Top toolbar: Martal branding on the left, file + zoom controls on the right.
-// Zoom lives here to keep the viewer itself distraction-free.
+// Sequence tool toolbar: tool title on the left, file + zoom controls on the
+// right. Global branding lives in the ToolRail; zoom lives here to keep the
+// viewer itself distraction-free.
 
 interface TopBarProps {
+	title: string;
 	hasFrames: boolean;
 	zoomPercent: number;
 	onOpen: () => void;
@@ -14,6 +16,7 @@ interface TopBarProps {
 }
 
 export function TopBar({
+	title,
 	hasFrames,
 	zoomPercent,
 	onOpen,
@@ -26,17 +29,7 @@ export function TopBar({
 }: TopBarProps) {
 	return (
 		<header className="topbar">
-			<div className="brand">
-				<img
-					className="brand-logo"
-					src="/Martal-logo-circle-500x500-web.png"
-					alt="Martal Games"
-				/>
-				<div className="brand-text">
-					<span className="brand-title">Sequence Viewer</span>
-					<span className="brand-sub">Martal Games · Dev Tools</span>
-				</div>
-			</div>
+			<h1 className="tool-title">{title}</h1>
 
 			{hasFrames && (
 				<div className="topbar-controls">
